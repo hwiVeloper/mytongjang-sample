@@ -21,7 +21,7 @@ public class RestPayController {
         String processType = request.getParameter("processType");
         String mercntId = request.getParameter("mercntId");
         String ordNo = request.getParameter("ordNo");
-        String trPrice = request.getParameter("trPrice");
+        String trPrice = request.getParameter("trPricePlain");
         String productNm = request.getParameter("productNm");
         String dutyFreeYn = request.getParameter("dutyFreeYn");
         String addtionalDeductionType = request.getParameter("addtionalDeductionType");

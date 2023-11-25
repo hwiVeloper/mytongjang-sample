@@ -46,7 +46,7 @@
                         </tr>
                         <tr>
                             <td>주문번호</td><td><input type="text" name="ordNo" id="ordNo" placeholder="주문번호" th:value="${ordNo}"></td>
-                            <td>거래금액</td><td><input type="text" name="trPrice" id="trPrice" placeholder="거래금액" value=""></td>
+                            <td>거래금액</td><td><input type="text" name="trPricePlain" id="trPricePlain" placeholder="거래금액" value=""></td>
                         </tr>
                         <tr>
                             <td>상품명</td><td><input type="text" name="productNm" id="productNm" placeholder="상품명" value=""></td>
@@ -61,7 +61,7 @@
                             <td>가맹점데이터2</td><td><input type="text" name="mercntParam2" id="mercntParam2" placeholder="가맹점데이터2" value=""></td>
                         </tr>
                         <tr>
-                            <td>viewType[popup/self]</td><td><input type="text" id="viewType" name="viewType" placeholder="결제창 팝업방식" value="popup" /></td>
+                            <td>viewType[popup/self]</td><td><input type="text" id="viewType" name="viewType" placeholder="결제창 팝업방식" value="self" /></td>
                         </tr>
                         </tbody>
                     </table>
@@ -74,6 +74,7 @@
             <!-- //fixed bottom button -->
         </div>
 
+        <input type="hidden" id="trPrice" name="trPrice" value="" /> <!-- 거래금액 -->
         <input type="hidden" id="trDay" name="trDay" value="" /> <!-- 거래일자 -->
         <input type="hidden" id="trTime" name="trTime" value="" /> <!-- 거래시간 -->
         <input type="hidden" id="signature" name="signature" value="" /> <!-- 위변조 방지 sha256 hash 값 -->
@@ -98,9 +99,9 @@
             alert("주문번호를 입력해주세요.");
             $("#ordNo").focus();
             return;
-        } else if ( $("#trPrice").val() == "" ) {
+        } else if ( $("#trPricePlain").val() == "" ) {
             alert("거래금액을 입력해주세요.");
-            $("#trPrice").focus();
+            $("#trPricePlain").focus();
             return;
         } else if ( $("#productNm").val() == "" ) {
             alert("상품명을 입력해주세요.");
