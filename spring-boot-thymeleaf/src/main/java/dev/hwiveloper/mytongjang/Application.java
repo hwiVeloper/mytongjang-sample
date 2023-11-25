@@ -1,13 +1,15 @@
-package dev.hwiveloper.mytongjang.mytongjang;
+package dev.hwiveloper.mytongjang;
 
+import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class SpringBootThymeleafApplication {
+@EnableEncryptableProperties
+public class Application {
 
     public static void main(String[] args) {
-        SpringApplication.run(SpringBootThymeleafApplication.class, args);
+        SpringApplication.run(Application.class, args);
     }
 
 }

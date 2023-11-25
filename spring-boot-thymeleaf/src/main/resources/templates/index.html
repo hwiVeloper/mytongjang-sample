@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <script src="https://tbezauth.settlebank.co.kr/js/SettlePay.js"></script>
+    <script th:src="${baseUrl + '/js/jquery-3.7.1.min.js'}"></script>
+
+    <style>
+        input {
+            width: 280px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Sample1</h1>
+    <form method="post" action="" id="payForm" name="payForm" >
+        <div>
+            <!-- container -->
+            <div class="container">
+                <div class="table-responsive">
+                    <table class="table">
+                        <colgroup>
+                            <col style="width: 15%; background-color: lightgray;">
+                            <col style="width: 35%;">
+                            <col style="width: 15%; background-color: lightgray;">
+                            <col style="width: 35%;">
+                        </colgroup>
+                        <thead>
+                        <tr>
+                            <th>항목</th>
+                            <th>값</th>
+                            <th>항목</th>
+                            <th>값</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>전문정보</td><td><input type="text" name="hdInfo" id="hdInfo" placeholder="전문정보" value="IA_AUTHPAGE_1.0_1.0" readonly="readonly"></td>
+                            <td>전문버전</td><td><input type="text" name="apiVer" id="apiVer" placeholder="전문버전" value="1.0" readonly="readonly"></td>
+                        </tr>
+                        <tr>
+                            <td>처리구분</td><td><input type="text" name="processType" id="processType" placeholder="처리구분" value="D"></td>
+                            <td>가맹점아이디</td><td><input type="text" name="mercntId" id="mercntId" placeholder="가맹점아이디" th:value="${mercntId}"></td>
+                        </tr>
+                        <tr>
+                            <td>주문번호</td><td><input type="text" name="ordNo" id="ordNo" placeholder="주문번호" th:value="${ordNo}"></td>
+                            <td>거래금액</td><td><input type="text" name="trPrice" id="trPrice" placeholder="거래금액" value=""></td>
+                        </tr>
+                        <tr>
+                            <td>상품명</td><td><input type="text" name="productNm" id="productNm" placeholder="상품명" value=""></td>
+                            <td>면세여부[Y/N/G]</td><td><input type="text" name="dutyFreeYn" id="dutyFreeYn" placeholder="면세여부" value="N"></td>
+                        </tr>
+                        <tr>
+                            <td>결과통보URL</td><td><input type="text" name="callbackUrl" id="callbackUrl" placeholder="결과통보URL" th:value="${baseUrl + '/callback'}"></td>
+                            <td>인증창취소URL</td><td><input type="text" name="cancelUrl" id="cancelUrl" placeholder="인증창취소URL" th:value="${baseUrl + '/cancel'}"></td>
+                        </tr>
+                        <tr>
+                            <td>가맹점데이터1</td><td><input type="text" name="mercntParam1" id="mercntParam1" placeholder="가맹점데이터1" value=""></td>
+                            <td>가맹점데이터2</td><td><input type="text" name="mercntParam2" id="mercntParam2" placeholder="가맹점데이터2" value=""></td>
+                        </tr>
+                        <tr>
+                            <td>viewType[popup/self]</td><td><input type="text" id="viewType" name="viewType" placeholder="결제창 팝업방식" value="popup" /></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- //container -->
+
+            <!-- fixed bottom button -->
+            <div class="fix_btm_btn"><button type="button" id="send" class="btn btn_lg" onclick="goPayAuth();">결제인증요청</button></div>
+            <!-- //fixed bottom button -->
+        </div>
+
+        <input type="hidden" id="trDay" name="trDay" value="" /> <!-- 거래일자 -->
+        <input type="hidden" id="trTime" name="trTime" value="" /> <!-- 거래시간 -->
+        <input type="hidden" id="signature" name="signature" value="" /> <!-- 위변조 방지 sha256 hash 값 -->
+    </form>
+</body>
+
+<script>
+    function goPayAuth(){
+        if ( $("#hdInfo").val() == "" ) {
+            alert("전문정보를 입력해주세요.");
+            $("#hdInfo").focus();
+            return;
+        } else if ( $("#apiVer").val() == "" ) {
+            alert("전문버전을 입력해주세요.");
+            $("#apiVer").focus();
+            return;
+        } else if ( $("#mercntId").val() == "" ) {
+            alert("가맹점아이디를 입력해주세요.");
+            $("#mercntId").focus();
+            return;
+        } else if ( $("#ordNo").val() == "" ) {
+            alert("주문번호를 입력해주세요.");
+            $("#ordNo").focus();
+            return;
+        } else if ( $("#trPrice").val() == "" ) {
+            alert("거래금액을 입력해주세요.");
+            $("#trPrice").focus();
+            return;
+        } else if ( $("#productNm").val() == "" ) {
+            alert("상품명을 입력해주세요.");
+            $("#productNm").focus();
+            return;
+        } else if ( $("#dutyFreeYn").val() == "" ) {
+            alert("면세여부를 입력해주세요.");
+            $("#dutyFreeYn").focus();
+            return;
+        } else if ( $("#dutyFreeYn").val() == "G" ) {
+            if ( $("#taxPrice").val() == "" ) {
+                alert("복합과세일경우 과세금액을 입력해주세요.");
+                $("#taxPrice").focus();
+                return;
+            } else if ( $("#vatPrice").val() == "" ) {
+                alert("복합과세일경우 부가세금액을 입력해주세요.");
+                $("#vatPrice").focus();
+                return;
+            } else if ( $("#dutyFreePrice").val() == "" ) {
+                alert("복합과세일경우 면세금액을 입력해주세요.");
+                $("#dutyFreePrice").focus();
+                return;
+            }
+        } else if ( $("#callbackUrl").val() == "" ) {
+            alert("결과통보URL을 입력해주세요.");
+            $("#callbackUrl").focus();
+            return;
+        }
+
+        $.ajax({
+            type : 'POST',
+            url : '/payReserv',
+            dataType : 'JSON',
+            data : $("#payForm").serialize(),
+            success: function(data) {
+                if(data.resCode == "0000"){
+                    $("#trPrice").val(data.trPriceEnc);
+                    $("#email").val(data.emailEnc);
+                    $("#cphoneNo").val(data.cphoneNoEnc);
+                    $("#signature").val(data.signature);
+                    $("#trDay").val(data.trDay);
+                    $("#trTime").val(data.trTime);
+
+                    var obj = document.forms["payForm"];
+                    SettlePay.pay(obj);
+                }else{
+                    alert("fail");
+                }
+            },
+            error: function(e) {
+                alert("처리중 오류가 발생했습니다");
+            }
+        });
+
+    }
+</script>
+</html>
