@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <script src="https://tbezauth.settlebank.co.kr/js/SettlePay.js"></script>
+    <script src="/js/jquery-3.7.1.min.js"></script>
+
+    <style>
+        input {
+            width: 280px;
+        }
+    </style>
+</head>
+<body>
+    <h1>결제승인</h1>
+    <form method="post" action="" id="payForm" name="payForm" >
+        <div>
+            <!-- container -->
+            <div class="container">
+                <div class="table-responsive">
+                    <table class="table">
+                        <colgroup>
+                            <col style="width: 15%; background-color: lightgray;">
+                            <col style="width: 35%;">
+                            <col style="width: 15%; background-color: lightgray;">
+                            <col style="width: 35%;">
+                        </colgroup>
+                        <thead>
+                        <tr>
+                            <th>항목</th>
+                            <th>값</th>
+                            <th>항목</th>
+                            <th>값</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>결과코드</td><td><input type="text" name="resultCd" id="resultCd" placeholder="결과코드" th:value="${resultCd}" readonly="readonly"></td>
+                            <td>결과메세지</td><td><input type="text" name="resultMsg" id="resultMsg" placeholder="결과메세지" th:value="${resultMsg}" readonly="readonly"></td>
+                        </tr>
+                        <tr>
+                            <td>가맹점아이디</td><td><input type="text" name="mercntId" id="mercntId" placeholder="가맹점아이디" th:value="${mercntId}"></td>
+                            <td>거래금액</td><td><input type="text" name="trPrice" id="trPrice" placeholder="거래금액" th:value="${trPrice}"></td>
+                        </tr>
+                        <tr>
+                            <td>할인금액</td><td><input type="text" name="discntPrice" id="discntPrice" placeholder="할인금액" th:value="${discntPrice}"></td>
+                            <td>결제금액</td><td><input type="text" name="payPrice" id="payPrice" placeholder="결제금액" th:value="${payPrice}"></td>
+                        </tr>
+                        <tr>
+                            <td>주문번호</td><td><input type="text" name="ordNo" id="ordNo" placeholder="주문번호" th:value="${ordNo}"></td>
+                            <td>승인번호</td><td><input type="text" name="authNo" id="authNo" placeholder="승인번호" th:value="${authNo}"></td>
+                        </tr>
+                        <tr>
+                            <td>거래일자</td><td><input type="text" name="trDay" id="trDay" placeholder="거래일자" th:value="${trDay}"></td>
+                            <td>거래시간</td><td><input type="text" name="trTime" id="trTime" placeholder="거래시간" th:value="${trTime}"></td>
+                        </tr>
+                        <tr>
+                            <td>가맹점데이터1</td><td><input type="text" name="mercntParam1" id="mercntParam1" placeholder="가맹점데이터1" value=""></td>
+                            <td>가맹점데이터2</td><td><input type="text" name="mercntParam2" id="mercntParam2" placeholder="가맹점데이터2" value=""></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- //container -->
+
+            <!-- fixed bottom button -->
+            <div class="fix_btm_btn"><button type="button" id="send" class="btn btn_lg" onclick="payAction();">결제승인요청</button></div>
+            <!-- //fixed bottom button -->
+        </div>
+    </form>
+</body>
+
+<script th:inline="javascript">
+    var viewType = /*[[ ${viewType} ]]*/ "";
+    console.log(viewType);
+    if (viewType == "popup") {
+        window.opener.setValue("#callbackMercntId",/*[[ ${mercntId} ]]*/"");
+        window.opener.setValue("#callbackAuthNo",/*[[ ${authNo} ]]*/"");
+        window.opener.setValue("#callbackOrdNo",/*[[ ${ordNo} ]]*/"");
+
+        //종료
+        window.close();
+    } else {
+
+    }
+</script>
+</html>

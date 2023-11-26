@@ -5,7 +5,7 @@
     <title>Title</title>
 
     <script src="https://tbezauth.settlebank.co.kr/js/SettlePay.js"></script>
-    <script th:src="${baseUrl + '/js/jquery-3.7.1.min.js'}"></script>
+    <script src="/js/jquery-3.7.1.min.js"></script>
 
     <style>
         input {
@@ -14,7 +14,7 @@
     </style>
 </head>
 <body>
-    <h1>Sample1</h1>
+    <h1>결제인증</h1>
     <form method="post" action="" id="payForm" name="payForm" >
         <div>
             <!-- container -->
@@ -78,6 +78,55 @@
         <input type="hidden" id="trDay" name="trDay" value="" /> <!-- 거래일자 -->
         <input type="hidden" id="trTime" name="trTime" value="" /> <!-- 거래시간 -->
         <input type="hidden" id="signature" name="signature" value="" /> <!-- 위변조 방지 sha256 hash 값 -->
+    </form>
+    <br/>
+    <br/>
+    <br/>
+    <br/>
+    <br/>
+    <h1>결제승인(팝업의 경우)</h1>
+    <form method="post" action="" id="payApprovForm" name="payApprovForm" >
+        <div>
+            <!-- container -->
+            <div class="container">
+                <div class="table-responsive">
+                    <table class="table">
+                        <colgroup>
+                            <col style="width: 25%; background-color: lightgray;">
+                            <col style="width: 75%;">
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th>항목</th>
+                                <th>값</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>전문정보</td><td><input type="text" name="hdInfo" id="callbackHdInfo" placeholder="전문정보" value="IA_APPROV_1.0_1.0"></td>
+                            </tr>
+                            <tr>
+                                <td>전문버전</td><td><input type="text" name="apiVer" id="callbackApiVer" placeholder="전문버전" value="1.0"></td>
+                            </tr>
+                            <tr>
+                                <td>가맹점아이디</td><td><input type="text" name="callbackMercntId" id="callbackMercntId" placeholder="가맹점아이디" value=""></td>
+                            </tr>
+                            <tr>
+                                <td>인증번호</td><td><input type="text" name="callbackAuthNo" id="callbackAuthNo" placeholder="인증번호"  value="" /></td>
+                            </tr>
+                            <tr>
+                                <td>주문번호</td><td><input type="text" name="callbackOrdNo" id="callbackOrdNo" placeholder="주문번호"  value="" /></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- //container -->
+
+            <!-- fixed bottom button -->
+            <div class="fix_btm_btn"><button type="button" id="sendPay" class="btn btn_lg" onclick="goPayApprov();">결제승인요청</button></div>
+            <!-- //fixed bottom button -->
+        </div>
     </form>
 </body>
 
@@ -156,6 +205,53 @@
             }
         });
 
+    }
+
+    function setValue(selector, value){
+        $(selector).val(value);
+    }
+
+    function goPayApprov(){
+        if ( $("#callbackHdInfo").val() == "" ) {
+            alert("전문정보를 입력해주세요.");
+            $("#callbackHdInfo").focus();
+            return;
+        } else if ( $("#callbackApiVer").val() == "" ) {
+            alert("전문버전을 입력해주세요.");
+            $("#callbackApiVer").focus();
+            return;
+        } else if ( $("#callbackMercntId").val() == "" ) {
+            alert("가맹점아이디를 입력해주세요.");
+            $("#callbackMercntId").focus();
+            return;
+        } else if ( $("#callbackAuthNo").val() == "" ) {
+            alert("인증번호를 입력해주세요.");
+            $("#callbackAuthNo").focus();
+            return;
+        }
+
+        $.ajax({
+            type : 'POST',
+            url : '/payAction',
+            dataType : 'JSON',
+            data : {
+                'hdInfo' : $("#callbackHdInfo").val(),
+                'apiVer' : $("#callbackApiVer").val(),
+                'mercntId' : $("#callbackMercntId").val(),
+                'authNo' : $("#callbackAuthNo").val(),
+                'ordNo':$("#callbackOrdNo").val()
+            },
+            success: function(data) {
+                if(data.resultCd == "0"){
+                    alert(data.resultMsg);
+                }else{
+                    alert(data.resultMsg);
+                }
+            },
+            error: function(e) {
+                alert("처리중 오류가 발생했습니다");
+            }
+        });
     }
 </script>
 </html>

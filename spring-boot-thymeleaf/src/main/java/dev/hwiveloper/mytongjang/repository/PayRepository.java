@@ -4,5 +4,5 @@ import dev.hwiveloper.mytongjang.domain.Pay;
 import org.springframework.data.repository.CrudRepository;
 
 public interface PayRepository extends CrudRepository<Pay, String> {
-
+    public Pay findByOrdNo(String ordNo) throws Exception;
 }

@@ -26,6 +26,7 @@ public class Pay {
     private String signature;
     private String mercntParam1;
     private String mercntParam2;
+    private String viewType;
 
     // 결제
     private String authNo;
