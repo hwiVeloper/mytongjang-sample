@@ -58,7 +58,7 @@ public class PayController {
 		String mercntParam2 = request.getParameter("mercntParam2");
 
 		// PAY_RESERV 테이블 조회
-		Pay pay = payRepo.findByOrdNo(ordNo);
+		Pay pay = payRepo.findByOrdNo(ordNo).orElseThrow(Exception::new);
 		String viewType = pay.getViewType();
 
 		if (resultCd.equals("0")) {
@@ -75,6 +75,9 @@ public class PayController {
 			model.addAttribute("mercntParam1", mercntParam1);
 			model.addAttribute("mercntParam2", mercntParam2);
 			model.addAttribute("viewType", viewType);
+
+			pay.setAuthNo(authNo);
+			payRepo.save(pay);
 		} else {
 			model.addAttribute("resultCd", resultCd);
 			model.addAttribute("ordNo", ordNo);

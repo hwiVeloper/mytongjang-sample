@@ -37,6 +37,10 @@
                         </thead>
                         <tbody>
                         <tr>
+                            <td>전문정보</td><td><input type="text" name="hdInfo" id="hdInfo" placeholder="전문정보" value="IA_APPROV"></td>
+                            <td>전문버전</td><td><input type="text" name="apiVer" id="apiVer" placeholder="전문버전" value="3.0"></td>
+                        </tr>
+                        <tr>
                             <td>결과코드</td><td><input type="text" name="resultCd" id="resultCd" placeholder="결과코드" th:value="${resultCd}" readonly="readonly"></td>
                             <td>결과메세지</td><td><input type="text" name="resultMsg" id="resultMsg" placeholder="결과메세지" th:value="${resultMsg}" readonly="readonly"></td>
                         </tr>
@@ -67,7 +71,7 @@
             <!-- //container -->
 
             <!-- fixed bottom button -->
-            <div class="fix_btm_btn"><button type="button" id="send" class="btn btn_lg" onclick="payAction();">결제승인요청</button></div>
+            <div class="fix_btm_btn"><button type="button" id="send" class="btn btn_lg" onclick="goPayApprov();">결제승인요청</button></div>
             <!-- //fixed bottom button -->
         </div>
     </form>
@@ -83,8 +87,49 @@
 
         //종료
         window.close();
-    } else {
+    }
 
+    function goPayApprov(){
+        if ( $("#hdInfo").val() == "" ) {
+            alert("전문정보를 입력해주세요.");
+            $("#hdInfo").focus();
+            return;
+        } else if ( $("#apiVer").val() == "" ) {
+            alert("전문버전을 입력해주세요.");
+            $("#apiVer").focus();
+            return;
+        } else if ( $("#mercntId").val() == "" ) {
+            alert("가맹점아이디를 입력해주세요.");
+            $("#mercntId").focus();
+            return;
+        } else if ( $("#authNo").val() == "" ) {
+            alert("인증번호를 입력해주세요.");
+            $("#authNo").focus();
+            return;
+        }
+
+        $.ajax({
+            type : 'POST',
+            url : '/payAction',
+            dataType : 'JSON',
+            data : {
+                'hdInfo' : $("#hdInfo").val(),
+                'apiVer' : $("#apiVer").val(),
+                'mercntId' : $("#mercntId").val(),
+                'authNo' : $("#authNo").val(),
+                'ordNo':$("#ordNo").val()
+            },
+            success: function(data) {
+                if(data.resultCd == "0"){
+                    alert("결제승인 성공. 거래번호 : " + data.trNo);
+                }else{
+                    alert("결제승인 실패. " + data.resultMsg);
+                }
+            },
+            error: function(e) {
+                alert("처리중 오류가 발생했습니다");
+            }
+        });
     }
 </script>
 </html>

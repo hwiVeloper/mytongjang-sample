@@ -1,6 +1,7 @@
 package dev.hwiveloper.mytongjang.controller;
 
 import dev.hwiveloper.mytongjang.domain.Pay;
+import dev.hwiveloper.mytongjang.dto.PayApprov;
 import dev.hwiveloper.mytongjang.dto.PayReserv;
 import dev.hwiveloper.mytongjang.repository.PayRepository;
 import dev.hwiveloper.mytongjang.util.ChiperUtil;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
@@ -96,7 +98,7 @@ public class RestPayController {
     }
 
     @RequestMapping(value = "/payAction")
-    public String paymentAction(Model model, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public PayApprov paymentAction(Model model, HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         String encrypt_key = "SETTLEBANKISGOODSETTLEBANKISGOOD";
 
@@ -120,32 +122,52 @@ public class RestPayController {
         reqParam.put("reqTime", reqTime);
         reqParam.put("signature", signature);
 
+        log.info("request json : " + reqParam.toString());
+
         // 응답 파라메터
         JSONObject responseJSON = null;
 
         RestTemplate rt = new RestTemplate();
-        ResponseEntity<JSONObject> payApprovResponse = rt.exchange(
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_TYPE, "application/json;charset=UTF-8");
+
+        ResponseEntity<String> payApprovResponse = rt.exchange(
                 "https://tbezauthapi.settlebank.co.kr/APIPayApprov.do",
                     HttpMethod.POST,
-                    new HttpEntity<>(reqParam),
-                    JSONObject.class);
-        responseJSON = payApprovResponse.getBody();
+                    new HttpEntity<>(reqParam.toString(), headers),
+                    String.class);
+        responseJSON = new JSONObject(payApprovResponse.getBody());
 
-        Pay pay = payRepo.findByOrdNo(ordNo);
+        log.info(responseJSON.toString());
+
+        Pay pay = payRepo.findByOrdNo(ordNo).orElseThrow(Exception::new);
+        log.info(pay.toString());
+
+        PayApprov payApprov = null;
+
         if ("0".equals(responseJSON.get("resultCd").toString())) {
             // 성공시 후처리
             pay.setPayResultCd("0");
             pay.setTrNo(responseJSON.get("trNo").toString());
             payRepo.save(pay);
+
+            payApprov = PayApprov.builder()
+                    .resultCd(responseJSON.get("resultCd").toString())
+                    .trNo(responseJSON.get("trNo").toString())
+                    .build();
         } else {
             // 실패시 후처리
-            pay.setPayResultCd(responseJSON.get("resultCd").toString());
+            pay.setPayResultCd(responseJSON.get("errCd").toString());
             pay.setPayResultMsg(responseJSON.get("resultMsg").toString());
             payRepo.save(pay);
+
+            payApprov = PayApprov.builder()
+                    .resultCd(responseJSON.get("resultCd").toString())
+                    .errCd(String.valueOf(responseJSON.get("errCd")))
+                    .resultMsg(responseJSON.get("resultMsg").toString())
+                    .build();
         }
 
-        model.addAttribute("result", responseJSON);
-
-        return "comm/result";
+        return payApprov;
     }
 }
