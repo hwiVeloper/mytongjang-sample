@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <script src="https://tbezauth.settlebank.co.kr/js/SettlePay.js"></script>
+    <script src="/js/jquery-3.7.1.min.js"></script>
+
+    <style>
+        input {
+            width: 280px;
+        }
+    </style>
+</head>
+<body>
+    <h1>결제승인</h1>
+    <form method="post" action="" id="payForm" name="payForm" >
+        <div>
+            <!-- container -->
+            <div class="container">
+                <div class="table-responsive">
+                    <table class="table">
+                        <colgroup>
+                            <col>
+                            <col>
+                            <col>
+                            <col>
+                        </colgroup>
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>주문번호</th>
+                            <th>승인번호</th>
+                            <th>거래번호</th>
+                            <th>상태</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="pay : ${payList}">
+                                <td th:text="${pay.id}"></td>
+                                <td th:text="${pay.ordNo}"></td>
+                                <td th:text="${pay.authNo}"></td>
+                                <td th:text="${pay.trNo}"></td>
+                                <th:block th:switch="${pay.payStatus}">
+                                    <td th:case="${'P'}">결제완료</td>
+                                    <td th:case="${'C'}">결제취소완료</td>
+                                </th:block>
+                                <td th:if="${pay.payStatus == 'P'}">
+                                    <button type="button" th:onclick="goCancel([[${pay.ordNo}]], [[${pay.trNo}]])">결제취소</button>
+                                </td>
+                                <td th:if="${pay.payStatus == 'C'}"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- //container -->
+        </div>
+    </form>
+</body>
+
+<script th:inline="javascript">
+    function goCancel(ordNo, trNo) {
+        console.log(ordNo + ", " + trNo)
+        $.ajax({
+            type : 'POST',
+            url : '/payCancel',
+            dataType : 'JSON',
+            data : {
+                ordNo: ordNo,
+                trNo: trNo
+            },
+            success: function(data) {
+                if(data.resultCd == "0"){
+                    alert("결제 취소 성공");
+                    location.reload();
+                }else{
+                    alert("결제 취소 실패 : " + data.resultMsg);
+                }
+            },
+            error: function(e) {
+                alert("처리중 오류가 발생했습니다");
+            }
+        });
+    }
+</script>
+</html>

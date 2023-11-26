@@ -11,6 +11,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import java.util.List;
+
 /**
  * 
  * @author firstkhw
@@ -77,6 +79,7 @@ public class PayController {
 			model.addAttribute("viewType", viewType);
 
 			pay.setAuthNo(authNo);
+			pay.setPayStatus("A");
 			payRepo.save(pay);
 		} else {
 			model.addAttribute("resultCd", resultCd);
@@ -90,5 +93,11 @@ public class PayController {
 	@RequestMapping(value = "/cancel", method = RequestMethod.POST)
 	public String cancel(Model model, HttpServletRequest request) throws Exception {
 		return "cancel";
+	}
+
+	@RequestMapping(value = "/list", method = RequestMethod.GET)
+	public String list(Model model) throws Exception {
+		model.addAttribute("payList", payRepo.findAllByPayStatusIn(List.of("P", "C")).orElse(null));
+		return "list";
 	}
 }

@@ -38,4 +38,7 @@ public class Pay {
     private String cancelOrdNo;
     private String cancelResultCd;
     private String cancelResultMsg;
+    private String cancelTrNo;
+
+    private String payStatus; // O, A, P, C
 }
