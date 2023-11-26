@@ -29,10 +29,10 @@ public class PayController {
 		String mercntId = "ms00003t";
 		model.addAttribute("mercntId", mercntId);
 		model.addAttribute("ordNo", "SAMPLE_" + DateUtil.getDateTimeMillisecond());
-
 		model.addAttribute("baseUrl", request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort());
 
 		model.addAttribute("productNm", "테스트 상품");
+
 		return "index";
 	}
 

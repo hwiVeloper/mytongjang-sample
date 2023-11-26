@@ -1,16 +1,25 @@
 package dev.hwiveloper.mytongjang.controller;
 
+import dev.hwiveloper.mytongjang.domain.Pay;
 import dev.hwiveloper.mytongjang.dto.PayReserv;
+import dev.hwiveloper.mytongjang.repository.PayRepository;
 import dev.hwiveloper.mytongjang.util.ChiperUtil;
 import dev.hwiveloper.mytongjang.util.DateUtil;
 import dev.hwiveloper.mytongjang.util.SignatureUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequiredArgsConstructor
+@Slf4j
 public class RestPayController {
+
+    private final PayRepository orderRepo;
+
     @PostMapping(value = "/payReserv")
     public PayReserv payReserv(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
@@ -50,7 +59,6 @@ public class RestPayController {
         String hashValue = SignatureUtil.sha256(mercntId+ordNo+trDay+trTime+trPrice+encrypt_key);
 
         //응답 파라메터
-
         PayReserv payReserv = PayReserv.builder()
                 .resCode("0000")
                 .trPriceEnc(trPriceEnc)
@@ -61,14 +69,20 @@ public class RestPayController {
                 .trTime(trTime)
                 .viewType(viewType)
                 .build();
-//        resParam.put("resCode", "0000");
-//        resParam.put("trPriceEnc", trPriceEnc);
-//        resParam.put("emailEnc", emailEnc);
-//        resParam.put("cphoneNoEnc", cphoneNoEnc);
-//        resParam.put("signature", hashValue);
-//        resParam.put("trDay", trDay);
-//        resParam.put("trTime", trTime);
-//        resParam.put("viewType", viewType);
+
+        // 주문 정보 저장
+        Pay order = Pay.builder()
+                .ordNo(ordNo)
+                .mercntId(mercntId)
+                .trPrice(Long.parseLong(trPrice))
+                .productNm(productNm)
+                .trDay(trDay)
+                .trTime(trTime)
+                .signature(hashValue)
+                .mercntParam1(mercntParam1)
+                .mercntParam2(mercntParam2)
+                .build();
+        orderRepo.save(order);
 
         return payReserv;
     }
